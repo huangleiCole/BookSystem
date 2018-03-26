@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wz.bs.mapper.UserMapper">
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache" />
+
+	<resultMap type="User" id="userMap">
+		<id column="id" property="id" />
+		<result column="no" property="no" />
+		<result column="name" property="name" />
+		<result column="createdate" property="createdate" />
+		<result column="realname" property="realname" />
+		<result column="phone" property="phone" />
+		<result column="status" property="status" />
+		<association property="admin" foreignColumn="admin_id"
+			column="admin_id" fetchType="lazy"
+			select="com.wz.bs.mapper.AdminMapper.selectOneById">
+		</association>
+	</resultMap>
+
+	<!-- 添加用户 -->
+	<insert id="add" parameterType="Admin">
+		insert into bsm_user
+		values(bsm_user_id.nextval,#{no},#{createdate},#{realname},#{phone},
+		#{status,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+		#{admin.id})
+	</insert>
+
+	<!-- 删除用户 -->
+	<delete id="delete" parameterType="Integer">
+		delete bsm_user where
+		id=#{id}
+	</delete>
+
+	<!-- 更新用户 -->
+	<update id="update" parameterType="User">
+		update bsm_user
+		<set>
+			<if test="realname !=null">
+				realname=#{realname},
+			</if>
+			<if test="phone !=null">
+				phone=#{phone},
+			</if>
+			<if test="status !=null">
+				status=#{status}
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+
+	<!-- 根据id查找用户 -->
+	<select id="selectOneById" parameterType="Integer" resultMap="userMap">
+		select * from bsm_user where id=#{id}
+	</select>
+
+	<!-- 根据用户编号查找 -->
+	<select id="selectByNo" parameterType="String" resultMap="userMap">
+		select * from bsm_user where no=#{no}
+	</select>
+	
+	<select id="selectOneByNo" parameterType="String" resultMap="userMap">
+		select * from bsm_user where no=#{no}
+	</select>
+
+	<!-- 查找所有用户 -->
+	<select id="selectAll" resultMap="userMap">
+		select * from bsm_user order by
+		id
+	</select>
+
+	<!-- 更多查询条件查找用户 -->
+	<select id="selectByCondition" resultMap="userMap">
+		select * from bsm_user
+		<where>
+			<if test="realname !=null">
+				realname=#{realname}
+			</if>
+			<if test="admin !=null">
+				and admin_id=#{admin.id}
+			</if>
+			<if test="phone !=null">
+				and phone=#{phone}
+			</if>
+			<if test="status !=null">
+				and status=#{status}
+			</if>
+			<if test="startdate !=null || enddate !=null">
+				and createdate between #{startdate} and #{enddate}
+			</if>
+		</where>
+		order by id
+	</select>
+</mapper>

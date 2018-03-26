@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wz.bs.mapper.AdminMapper">
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache" />
+
+	<!-- 添加管理员 -->
+	<insert id="add" parameterType="Admin">
+		insert into bsm_admin
+		values(bsm_admin_id.nextval,#{name},#{password},#{createdate},#{lastlogin},#{realname},#{phone},
+		#{flag,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+		#{status,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler})
+	</insert>
+
+	<!-- 删除管理员 -->
+	<delete id="delete" parameterType="Integer">
+		delete bsm_admin where
+		id=#{id}
+	</delete>
+
+	<!-- 更新管理员 -->
+	<update id="update" parameterType="Admin">
+		update bsm_admin
+		<set>
+			<if test="name !=null">
+				name=#{name},
+			</if>
+			<if test="password !=null">
+				password=#{password},
+			</if>
+			<if test="lastlogin !=null">
+				lastlogin=#{lastlogin},
+			</if>
+			<if test="realname !=null">
+				realname=#{realname},
+			</if>
+			<if test="phone !=null">
+				phone=#{phone},
+			</if>
+			<if test="status !=null">
+				status=#{status}
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+
+	<!-- 查找是否有超级管理员账号 -->
+	<select id="hasSuper" resultType="Admin">
+		select * from bsm_admin where
+		flag=0
+	</select>
+
+	<!-- 判断是否是默认密码 -->
+	<select id="isDefault" resultType="Admin" parameterType="String">
+		select *
+		from bsm_admin where
+		password='670B14728AD9902AECBA32E22FA4F6BD' and name=#{name}
+	</select>
+
+	<!-- 根据id查找单个管理员 -->
+	<select id="selectOneById" parameterType="Integer" resultType="Admin">
+		select * from bsm_admin where id=#{id}
+	</select>
+
+	<!-- 根据管理员名查找单个管理员 -->
+	<select id="selectOneByName" parameterType="String" resultType="Admin">
+		select * from bsm_admin where name=#{name}
+	</select>
+
+	<!-- 查询所有管理员 -->
+	<select id="selectAll" resultType="Admin">
+		select * from bsm_admin where
+		flag=1 order by id
+	</select>
+
+	<!-- 模糊查询管理员 -->
+	<select id="selectByMhName" resultType="Admin">
+		select * from bsm_admin
+		where name like '%'|| #{name} ||'%' and flag=1 order by id
+	</select>
+
+	<!-- 更多查询条件查找管理员 -->
+	<select id="selectByCondition" resultType="Admin">
+		select * from bsm_admin
+		<where>
+			<if test="phone !=null">
+				phone=#{phone}
+			</if>
+			<if test="status !=null">
+				and status=#{status}
+			</if>
+			<if test="startdate !=null || enddate !=null">
+				and createdate between #{startdate} and #{enddate}
+			</if>
+		</where>
+		and flag=1 order by id
+	</select>
+
+
+</mapper>

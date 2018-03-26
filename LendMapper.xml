@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wz.bs.mapper.LendMapper">
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache" />
+	
+	<resultMap type="Lend" id="lendMap">
+		<id column="id" property="id"/>
+		<result column="lenddate" property="lenddate"/>
+		<result column="returndate" property="returndate"/>
+		<result column="count" property="count"/>
+		<result column="lendstatus" property="lendstatus"/>
+		<association property="user" foreignColumn="user_id"
+			column="user_id" fetchType="lazy"
+			select="com.wz.bs.mapper.UserMapper.selectOneById">
+		</association>
+		<association property="book" foreignColumn="book_id"
+			column="book_id" fetchType="lazy"
+			select="com.wz.bs.mapper.BookMapper.selectOneById">
+		</association>
+		<association property="admin" foreignColumn="admin_id"
+			column="admin_id" fetchType="lazy"
+			select="com.wz.bs.mapper.AdminMapper.selectOneById">
+		</association>
+	</resultMap>
+	
+	<!-- 添加借书 -->
+	<insert id="add" parameterType="Lend">
+		insert into bsm_lend values (bsm_lend_id.nextval,#{lenddate},#{returndate},#{count},
+		#{lendstatus,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},#{user.id},#{book.id},#{admin.id})
+	</insert>
+	
+	<!-- 删除借书 -->
+	<delete id="delete" parameterType="Integer">
+		delete bsm_lend where id=#{id}
+	</delete>
+	
+	<!-- 更改借书 -->
+	<update id="update" parameterType="Lend">
+		update bsm_lend 
+		<set>
+			<if test="returndate !=null">
+				returndate=#{returndate},
+			</if>
+			<if test="count !=null">
+				count=#{count},
+			</if>
+			<if test="lendstatus !=null">
+				lendstatus=#{lendstatus}
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+	
+	<!-- 根据id查 -->
+	<select id="selectOneById" parameterType="Integer" resultMap="lendMap">
+		select * from bsm_lend where id=#{id}
+	</select>
+	
+	<!-- 查询所有 -->
+	<select id="selectAll" resultMap="lendMap">
+		select * from bsm_lend order by id
+	</select>
+</mapper>
