@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wz.bs.mapper.BookMapper">
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache" />
+
+	<resultMap type="Book" id="bookMap">
+		<id column="id" property="id" />
+		<result column="isbn" property="isbn" />
+		<result column="name" property="name" />
+		<result column="author" property="author" />
+		<result column="publishhouse" property="publishhouse" />
+		<result column="publishdate" property="publishdate" />
+		<result column="count" property="count" />
+		<result column="ondate" property="ondate" />
+		<result column="bookstatus" property="bookstatus" />
+		<association property="category" foreignColumn="category_id"
+			column="category_id" fetchType="lazy" select="com.wz.bs.mapper.CategoryMapper.selectOneById">
+		</association>
+		<association property="admin" foreignColumn="admin_id"
+			column="admin_id" fetchType="lazy" select="com.wz.bs.mapper.AdminMapper.selectOneById">
+		</association>
+	</resultMap>
+
+	<!-- 添加图书 -->
+	<insert id="add" parameterType="Book">
+		insert into bsm_book values
+		(bsm_book_id.nextval,#{isbn},#{name},#{author},#{publishhouse},
+		#{count},#{restcount},#{ondate},#{bookstatus,typeHandler=org.apache.ibatis.type.EnumOrdinalTypeHandler},
+		#{category.id},#{admin.id})
+	</insert>
+
+	<!-- 删除图书 -->
+	<delete id="delete" parameterType="Integer">
+		delete bsm_book where id=#{id}
+	</delete>
+
+	<!-- 更新图书 -->
+	<update id="update" parameterType="Book">
+		update bsm_book
+		<set>
+			<if test="isbn !=null">
+				isbn=#{isbn},
+			</if>
+			<if test="name !=null">
+				name=#{name},
+			</if>
+			<if test="author !=null">
+				author=#{author},
+			</if>
+			<if test="publishhouse !=null">
+				publishhouse=#{publishhouse},
+			</if>
+			<if test="count !=null">
+				count=#{count},
+			</if>
+			<if test="restcount !=null">
+				restcount=#{restcount},
+			</if>
+			<if test="bookstatus !=null">
+				bookstatus=#{bookstatus},
+			</if>
+			<if test="category !=null">
+				category_id=#{category.id}
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+
+	<!-- 根据id查找图书 -->
+	<select id="selectOneById" parameterType="Integer" resultMap="bookMap">
+		select * from bsm_book where id=#{id}
+	</select>
+
+	<!-- 根据isbn查找图书 -->
+	<select id="selectOneByIsbn" parameterType="String" resultMap="bookMap">
+		select * from bsm_book where isbn=#{isbn}
+	</select>
+
+	<!-- 根据图书名查找图书 -->
+	<select id="selectOneByName" parameterType="String" resultMap="bookMap">
+		select * from bsm_book where name=#{name}
+	</select>
+
+	<!-- 根据图书名模糊查找图书 -->
+	<select id="selectByMhName" parameterType="String" resultMap="bookMap">
+		select * from bsm_book where name like '%'|| #{name} ||'%' order by id
+	</select>
+	
+	<!-- 查找所有图书 -->
+	<select id="selectAll" resultMap="bookMap">
+		select * from bsm_book order by id
+	</select>
+</mapper>

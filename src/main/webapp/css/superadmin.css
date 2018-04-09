@@ -1,0 +1,14 @@
+#a1{
+	color: white;
+	margin-top: 3px;
+	padding-bottom: 10px;
+	padding-top:10px;
+	display: block;
+}
+#a1:hover{
+	background: #c9302c;
+}
+
+.s1{
+	margin: 16px 10px;
+}

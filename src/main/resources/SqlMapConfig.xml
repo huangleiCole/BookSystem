@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration SYSTEM "http://mybatis.org/dtd/mybatis-3-config.dtd" >
+
+<configuration>
+	<properties resource="dbconfig.properties" />
+
+	<!-- mybatis全局配置 -->
+	<settings>
+		<!-- 指定日志组件 -->
+		<!-- <setting name="logImpl" value="LOG4J" /> -->
+		<!-- 参数为null时的处理 -->
+		<setting name="jdbcTypeForNull" value="NULL" />
+
+		<setting name="cacheEnabled" value="true" />
+	</settings>
+
+	<typeAliases>
+		<package name="com.wz.bs.entity" />
+	</typeAliases>
+
+	<typeHandlers>
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+			javaType="com.wz.bs.entity.Status" />
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+			javaType="com.wz.bs.entity.BookStatus" />
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+			javaType="com.wz.bs.entity.Flag" />
+		<typeHandler handler="org.apache.ibatis.type.EnumOrdinalTypeHandler"
+			javaType="com.wz.bs.entity.LendStatus" />
+	</typeHandlers>
+
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${oracle.driverClass}" />
+				<property name="url" value="${oracle.url}" />
+				<property name="username" value="${oracle.username}" />
+				<property name="password" value="${oracle.password}" />
+			</dataSource>
+		</environment>
+	</environments>
+
+	<mappers>
+		<package name="com.wz.bs.mapper" />
+	</mappers>
+</configuration>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wz.bs.mapper.CategoryMapper">
+	<cache type="org.mybatis.caches.ehcache.EhcacheCache" />
+
+	<resultMap type="Category" id="categoryMap">
+		<id column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="count" property="count"/>
+		<association property="admin" foreignColumn="admin_id"
+			column="admin_id" fetchType="lazy"
+			select="com.wz.bs.mapper.AdminMapper.selectOneById">
+		</association>
+	</resultMap>
+
+	<!-- 添加分类 -->
+	<insert id="add" parameterType="Category">
+		insert into bsm_category values
+		(bsm_category_id.nextval,#{name},#{location},#{admin.id})
+	</insert>
+
+	<!-- 删除分类 -->
+	<delete id="delete" parameterType="Integer">
+		delete bsm_category where
+		id=#{id}
+	</delete>
+
+	<!-- 修改分类 -->
+	<update id="update" parameterType="Category">
+		update bsm_category
+		<set>
+			<if test="name !=null">
+				name=#{name},
+			</if>
+			<if test="location !=null">
+				location=#{location}
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+
+	<!-- 根据id查找分类 -->
+	<select id="selectOneById" parameterType="Integer" resultMap="categoryMap">
+		select * from bsm_category where id=#{id}
+	</select>
+
+	<!-- 查出所有分类 -->
+	<select id="selectAll" resultMap="categoryMap">
+		select * from bsm_category
+		order by id
+	</select>
+
+	<!-- 查询该分类有多少本图书 -->
+	<select id="selectCountByCategory" resultType="Integer"
+		parameterType="Integer">
+		select count(*) from bsm_book where category_id=#{id}
+	</select>
+
+</mapper>
